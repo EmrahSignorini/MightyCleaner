@@ -380,8 +380,8 @@ class BasicThymio:
                     mark_index = mark_id % self.markers_to_search
                     self.seen_marker[mark_index] = 0
                 # going in the opposite direction
-                self.vel_msg.linear.x /= -5
-                self.vel_msg.angular.z /= -10
+                self.vel_msg.linear.x /= -1.5
+                self.vel_msg.angular.z /= -15
                 rospy.loginfo("Marker Lost!")
                 # publish the velocity
                 self.velocity_publisher.publish(self.vel_msg)
@@ -419,6 +419,7 @@ class BasicThymio:
         # We check how distant is the robot from the marker
         diff = goal_pose.x - goal_distance
         # if it's far from the goal
+        pid_step = PID().calculate_pid_step(abs(diff))
         if abs(diff) > 0.08:
             # we divided by 100 to move it slowly so that when it's moving slowly it will not lose the marker due the blur effect
             lin_vel = diff/100
@@ -426,7 +427,7 @@ class BasicThymio:
             if lin_vel < 0:
                 # need tp go back asap
                 lin_vel = lin_vel * 0.5
-            self.vel_msg.linear.x = copysign(max(0.05, min(0.05, abs(lin_vel))), lin_vel)
+            self.vel_msg.linear.x = copysign(min(0.05, abs(pid_step)), lin_vel)
         # stop
         else:
             self.vel_msg.linear.x = 0
