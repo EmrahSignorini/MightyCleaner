@@ -47,7 +47,7 @@ class BasicThymio:
     def __init__(self, thymio_name):
         """init"""
         self.thymio_name = thymio_name
-        rospy.init_node('thymioid', anonymous=True)
+        rospy.init_node('MyghtyCleaner', anonymous=True, disable_signals=True)
 
         # Publish to the topic '/thymioX/cmd_vel'.
         self.velocity_publisher = rospy.Publisher(self.thymio_name + '/cmd_vel',
@@ -310,15 +310,15 @@ class BasicThymio:
                     self.vel_msg.angular.z = 0.00
                     self.velocity_publisher.publish(self.vel_msg)
                     self.state = Thymio_State.DONE
+                    rospy.signal_shutdown('I didn\'t find any marker')
             elif self.state == Thymio_State.UNLOAD:
-                rospy.loginfo('checking time')
                 now = rospy.Time.now()
-                print(self.time, now)
                 if self.time and now.secs - self.time.secs > 60:
                     rospy.loginfo('I can\'t find the trash can. I lost it!. Stopping!...')
                     self.vel_msg.angular.z = 0.00
                     self.velocity_publisher.publish(self.vel_msg)
                     self.state = Thymio_State.DONE
+                    rospy.signal_shutdown('Trashcan lost')
             if not self.last_seen_marker:
                 for marker in data.markers:
                     index = marker.id % self.markers_to_search
@@ -353,19 +353,21 @@ class BasicThymio:
                 self.seen_marker[mark_index] = 1
                 # Keep track of the data of last seen marker
                 self.last_seen_marker = deepcopy(mark)
-                # move towards the marker
-                self.move_to_goal(mark.pose.pose)
                 # Reset the timer
                 self.time = None
+                # move towards the marker
+                self.move_to_goal(mark.pose.pose)
+
             elif self.state == Thymio_State.UNLOAD and mark.id == 4:
                 rospy.loginfo("Trashcan Found!, moving towards it")
                 # mark that I have seen a marker
                 self.marker_seen = True
                 # copy the data
                 self.last_seen_marker = deepcopy(mark)
+                # Reset the timer
+                self.time = None
                 # move towards it
                 self.move_to_goal(mark.pose.pose)
-                self.time = None
         except (tf.Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             return None
         except IndexError:
@@ -443,6 +445,7 @@ class BasicThymio:
                 self.vel_msg.angular.z = 0.00
                 self.velocity_publisher.publish(self.vel_msg)
                 self.state = Thymio_State.DONE
+                rospy.signal_shutdown('Job finished')
             else:
                 # If I'm at the trash can just stop for a moment before continuing (this is to clear
                 # the array of the vel_publisher, which means give him some time to publish all other messages)
@@ -457,7 +460,8 @@ class BasicThymio:
                 if self.state == Thymio_State.SEARCHING:
                     rospy.loginfo('Looking for trashcan')
                     if not self.time:
-                        self.time = rospy.Time.now()
+                        t = rospy.Time.now()
+                        self.time = t
                 elif self.state == Thymio_State.UNLOAD:
                     rospy.loginfo('Looking for more markers')
                     # I have unloaded the trash, now i have to keep track of the time elapsed
@@ -476,11 +480,17 @@ if __name__ == '__main__':
     if len(sys.argv) >= 2:
         thymio_name = sys.argv[1]
         print "Now working with robot: %s" % thymio_name
+        try:
+            mark_number = int(sys.argv[2])
+        except Exception as e:
+            print e
+            mark_number = 2
     else:
         print usage()
         sys.exit(1)
     try:
         thymio = BasicThymio(thymio_name)
+        thymio.markers_to_search = mark_number
         rospy.loginfo('Give me 10 sec to set everything up')
         rospy.sleep(10.)
         thymio.state = Thymio_State.SEARCHING
