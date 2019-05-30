@@ -17,11 +17,11 @@ while getopts ":mrn:markers:t:" o; do
 done
 
 if (( $OPTIND == 1 )); then
-    rn='thymio10'
+    rn='thymio17'
     markers=2
 fi
 if [ -z "${rn}" ]; then
-    rn='thymio10'
+    rn='thymio17'
 fi
 if [[ "${markers}" < 1 ]]; then
     markers=2
@@ -38,7 +38,9 @@ fi
 echo "running the following command:\n roslaunch MightyCleaner thymiolaunch.launch name:=${rn} markers:=${markers}"
 if [[ ${m} == 1 ]]; then
     #statements
+    export ROS_MASTER_URI=http://"${rn}":11311
     catkin_make && source ~/catkin_ws/devel/setup.bash && roslaunch MightyCleaner thymiolaunch.launch name:="${rn}" markers:="${markers}" 2> /dev/null
 else
+    export ROS_MASTER_URI=http://"${rn}":11311
     catkin build && source ~/catkin_ws/devel/setup.bash && roslaunch MightyCleaner thymiolaunch.launch name:="${rn}" markers:="${markers}" 2> /dev/null
 fi
