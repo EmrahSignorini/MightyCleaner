@@ -499,8 +499,6 @@ if __name__ == '__main__':
         thymio.vel_msg.angular.z = 0
         thymio.velocity_publisher.publish(thymio.vel_msg)
     except (tf.Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        print('here in lookup main')
         pass
     except:
-        print('main error boh')
         pass
