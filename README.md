@@ -53,12 +53,12 @@ In case you are running it from the `MigthyCleaner` folder
 ~/catkin_ws/src/MigthyCleaner $ ./run.sh -m
 ```
 Once launched the program, wait about 10 seconds so that everything is set up, once you are good to go, put in front of the camera a marker that refers to the trash and wait until the robot adjust himself. Once he is done you will see a message similar to:
-```bash
+```
     Switching states
     Looking for trashcan
 ```
 Now what you have to do is put in front of the camera the marker corresponding to trashcan. Once done, if there are more trash markers to scan, you will see something like:
-```bash
+```
     Switching states
     Looking for more markers
 ```
