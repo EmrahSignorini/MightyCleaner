@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="name" default="thymio17"/>
+	<arg name="suffix" value="$(arg name)"/>
+	<arg name="tf_prefix" value="$(eval arg('name') + '/' if arg('name') else '')"/>
+	<param name="tf_prefix" value="$(arg tf_prefix)"/>
+	<include file="$(find thymioid)/launch/ar_indiv.launch" ns="thymio17"/>
+  	<node name="mighty" pkg="MightyCleaner" type="myT.py" required="true" args="$(arg name)" output="screen"/>
+</launch>
