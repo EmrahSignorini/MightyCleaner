@@ -17,22 +17,30 @@
 ## Option of the script
 The script takes 2 options:
  - `-m`: &nbsp;&nbsp; As explained above use this option only if you are using `catkin_make` to build the package
- - `-rn`: &nbsp;&nbsp; Robot name, the default value is `thymio17`, if you are using another robot use  `-rn <robot_name>`, so the program would look like this in the case I want to name my robot `thymio0`:
+ - `-r`: &nbsp;&nbsp; Robot name, the default value is `thymio17`, if you are using another robot use  `-r <robot_name>`, so the program would look like this in the case I want to name my robot `thymio0`:
     <br>In case you are running it from your catkin workspace folder
     ```bash
-    ~/catkin_ws $ ./src/MightyCleaner/run.sh -rn thymio0
+    ~/catkin_ws $ ./src/MightyCleaner/run.sh -r thymio0
     ```
     In case you are running it from the `MightyCleaner` folder
     ```bash
-    ~/catkin_ws/src/MightyCleaner $ ./run.sh -rn thymio0
+    ~/catkin_ws/src/MightyCleaner $ ./run.sh -r thymio0
     ```
- - `-markers`: &nbsp;&nbsp; This option is relative to the markers to search for. Default value is 2, if you want to change it, just run: 
+ - `-s`: &nbsp;&nbsp; This option is relative to the markers to search for. Default value is 2, if you want to change it, just run: 
     ```bash
-    ~/catkin_ws $ ./src/MightyCleaner/run.sh -markers 3
+    ~/catkin_ws $ ./src/MightyCleaner/run.sh -s 3
     ```
     In case you are running it from the `MightyCleaner` folder
     ```bash
-    ~/catkin_ws/src/MightyCleaner $ ./run.sh -markers 3
+    ~/catkin_ws/src/MightyCleaner $ ./run.sh -s 3
+    ```
+ - `-t`: &nbsp;&nbsp; This option is initial task of the robot, if set to true the robot will rotate initially.
+    ```bash
+    ~/catkin_ws $ ./src/MightyCleaner/run.sh -t true
+    ```
+    In case you are running it from the `MightyCleaner` folder
+    ```bash
+    ~/catkin_ws/src/MightyCleaner $ ./run.sh -t true
     ```
 #### Running the program
 ##### catkin build

@@ -306,7 +306,7 @@ class BasicThymio:
                 now = rospy.Time.now()
                 all_seen = not (0 in self.seen_marker)
                 if self.time and now.secs - self.time.secs > 60 and not all_seen:
-                    rospy.loginfo('There were more marker to see but saw none of them. Stopping!...')
+                    rospy.loginfo('There were {} more marker to see but saw none of them. Stopping!...'.format(self.seen_marker.count(0)))
                     self.vel_msg.angular.z = 0.00
                     self.velocity_publisher.publish(self.vel_msg)
                     self.state = Thymio_State.DONE
@@ -478,22 +478,27 @@ def usage():
 
 
 if __name__ == '__main__':
+    rotate = False
     if len(sys.argv) >= 2:
         thymio_name = sys.argv[1]
         print "Now working with robot: %s" % thymio_name
         try:
             mark_number = int(sys.argv[2])
-        except Exception as e:
-            print e
+        except ValueError as e:
             mark_number = 2
+
+        rotate = True if sys.argv[3] == 'true' else False
     else:
         print usage()
         sys.exit(1)
     try:
         thymio = BasicThymio(thymio_name)
-        thymio.markers_to_search = mark_number
         rospy.loginfo('Give me 10 sec to set everything up')
         rospy.sleep(10.)
+        if mark_number < 1:
+            rospy.loginfo('Invalid number for markers, setting it to default value 2')
+            mark_number = 2
+        thymio.markers_to_search = mark_number
         thymio.state = Thymio_State.SEARCHING
         # Teleport the robot to a certain pose. If pose is different to the
         # origin of the world, you must account for a transformation between
@@ -503,7 +508,15 @@ if __name__ == '__main__':
         # the simulation and spawning the respective models
         # thymio.thymio_state_service_request([0., 0., 0.], [0., 0., 0.])
         # rospy.sleep(1.)
-        rospy.loginfo('Good to go, let me search')
+        rospy.loginfo('Total markers to search: {}'.format(mark_number))
+        thymio.seen_marker = [0] * mark_number
+        if rotate:
+            rospy.loginfo('Rotating to search for markers')
+            thymio.vel_msg.angular.z = 0.09
+            thymio.velocity_publisher.publish(thymio.vel_msg)
+            thymio.time = rospy.Time.now()
+        else:
+            rospy.loginfo('Show me some markers')
         while not rospy.is_shutdown():
             continue
         thymio.vel_msg.linear.x = 0
