@@ -4,6 +4,7 @@
   - The code, to be able to run, needs the `ros-aseba` and `thymioid` repository, a detailed explanation on how to clone them can be found [here](https://github.com/romarcg/MightyCleaner/tree/master/assignment#install-gazebo-myt-model-and-plugins). Make **sure** to do the said steps first, otherwise there will be errors.
   - You will also need the markers, which can be found [here](http://wiki.ros.org/ar_track_alvar?action=AttachFile&do=view&target=markers9to17.png) (the ones relative to the trash) and [here](http://wiki.ros.org/ar_track_alvar?action=AttachFile&do=view&target=markers0to8.png), the latter you need just the center marker since it corresponds to the trashcan
   - We suppose that you have calibrated the motors of the wheels, if you haven't probably there will be some incoherence with the velocity of the robot 
+  - If you have not already, please install the `ar_track_alvar` ROS package, instructions on how to do it can be found [here](http://wiki.ros.org/ar_track_alvar), the installation guide supposes that you have the `indigo` distribution, if you have a different one, just replace `indigo` with your distribution  
 ## How to run
   - First thing that you have to do is:
   ```bash
